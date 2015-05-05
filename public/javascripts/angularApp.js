@@ -61,9 +61,15 @@ app.controller('PostCtrl', ['$scope', '$stateParams', 'posts', function ($scope,
   };
 }])
 
-app.factory('posts', [function () {
-  var o = {
-    posts: [
+app.factory('posts', ['$http', function ($http) {
+  var o={};
+
+  o.getAll = function() {
+    return $http.get('/posts').success(function(data) {
+      angular.copy(data, o.posts)
+    })
+  }
+  /*o.posts = [
       {
         title: 'post 1',
         upvotes: 5,
@@ -144,7 +150,6 @@ app.factory('posts', [function () {
           }
   ]
     }
-                ]
-  };
+                ];*/
   return o;
 }]);
