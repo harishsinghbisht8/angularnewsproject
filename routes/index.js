@@ -60,7 +60,7 @@ router.get('/posts/:post', function(req, res) {
   });
 });
 
-router.put('/posts/:post/upvote', function(req, res, next) {
+router.post('/posts/:post/upvote', function(req, res, next) {
   req.post.upvote(function(err, post){
     if (err) { return next(err); }
 

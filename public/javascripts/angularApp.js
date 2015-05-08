@@ -57,24 +57,24 @@ app.controller('MainCtrl', ['$scope', 'posts',
 
 app.controller('PostCtrl', ['$scope', '$stateParams', 'posts', 'post',
     function ($scope, $stateParams, posts, post) {
-      $scope.post = post;
+    $scope.post = post;
 
-      $scope.addComment = function () {
-        if ($scope.body === '') {
-          return;
-        }
-        posts.addComment(post._id, {
-          body: $scope.body,
-          author: 'user',
-        }).success(function (comment) {
-          $scope.post.comments.push(comment);
-        });
-        $scope.body = '';
-      };
+    $scope.addComment = function () {
+      if ($scope.body === '') {
+        return;
+      }
+      posts.addComment(post._id, {
+        body: $scope.body,
+        author: 'user',
+      }).success(function (comment) {
+        $scope.post.comments.push(comment);
+      });
+      $scope.body = '';
+    };
 
-      $scope.incrementUpvotes = function (comment) {
-        posts.upvoteComment(post, comment);
-      };
+    $scope.incrementUpvotes = function (comment) {
+      posts.upvoteComment(post, comment);
+    };
     }
 ]);
 
@@ -117,88 +117,29 @@ app.factory('posts', ['$http',
           comment.upvotes += 1;
         });
     };
-    /*o.posts = [
-        {
-          title: 'post 1',
-          upvotes: 5,
-          comments: [
-            {
-              author: 'Joe',
-              body: 'Cool post!',
-              upvotes: 0
-            },
-            {
-              author: 'Bob',
-              body: 'Great idea but everything is wrong!',
-              upvotes: 0
-            }
-    ]
-      },
-        {
-          title: 'post 2',
-          upvotes: 2,
-          comments: [
-            {
-              author: 'Joe',
-              body: 'Cool post!',
-              upvotes: 0
-            },
-            {
-              author: 'Bob',
-              body: 'Great idea but everything is wrong!',
-              upvotes: 0
-            }
-    ]
-      },
-        {
-          title: 'post 3',
-          upvotes: 15,
-          comments: [
-            {
-              author: 'Joe',
-              body: 'Cool post!',
-              upvotes: 0
-            },
-            {
-              author: 'Bob',
-              body: 'Great idea but everything is wrong!',
-              upvotes: 0
-            }
-    ]
-      },
-        {
-          title: 'post 4',
-          upvotes: 9,
-          comments: [
-            {
-              author: 'Joe',
-              body: 'Cool post!',
-              upvotes: 0
-            },
-            {
-              author: 'Bob',
-              body: 'Great idea but everything is wrong!',
-              upvotes: 0
-            }
-    ]
-      },
-        {
-          title: 'post 5',
-          upvotes: 4,
-          comments: [
-            {
-              author: 'Joe',
-              body: 'Cool post!',
-              upvotes: 0
-            },
-            {
-              author: 'Bob',
-              body: 'Great idea but everything is wrong!',
-              upvotes: 0
-            }
-    ]
-      }
-                  ];*/
     return o;
     }
 ]);
+
+app.factory('auth', ['$window', function ($window) {
+  var auth = {};
+
+  auth.setToken = function (token) {
+    $window.localStorage['flapper-news-token'] = token;
+  };
+
+  auth.gerToken = function () {
+    return $window.localStorage['flapper-news-token'];
+  };
+
+  auth.isLoggedIn = function () {
+    var token = auth.getToken();
+    if (token) {
+      var payload = JSON.parse($window.atob(token.split('.')[1]));
+      return payload.exp > Date.now() / 1000;
+    } else {
+      return false;
+    }
+  };
+  return auth;
+}]);
